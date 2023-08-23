@@ -46,7 +46,6 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Portrait Control")]
     public GameObject portrait;
-    public GameObject portraitFrame;
     public Sprite[] portraitSprites;
 
     private Story currentStory;
