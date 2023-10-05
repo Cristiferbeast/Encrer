@@ -225,10 +225,18 @@ public partial class GEncrer : Node{
 		}
 		dialogueVariables = new DialogueVariables(inkJSON);
 		inkExternalFunctions = new InkExternalFunctions();
-
 		audioSource = new AudioStreamPlayer();
 		AddChild(audioSource);
 		currentAudioInfo = defaultAudioInfo as DialogueAudio;
+		
+		dialogueIsPlaying = true;
+		dialoguePanel.Visible = true;
+		int index = 0;
+		if (choices.Length != choicesText.Length){
+			GD.PrintErr("Error: The 'choices' and 'choicesText' arrays must have the same length.");
+			return;
+		}
+		EnterDialogueMode(inkJSON);
 	}
 
 	public static GEncrer GetInstance(){
