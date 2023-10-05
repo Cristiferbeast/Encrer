@@ -1,0 +1,125 @@
+[gd_scene load_steps=10 format=3 uid="uid://bc6j8233mi008"]
+
+[ext_resource type="Script" path="res://Scripts/GEncrer.cs" id="1_3smmm"]
+[ext_resource type="Texture2D" uid="uid://bet7fx8dl1nq5" path="res://Art/Backgrounds/The Crash.jpg" id="3_n8nq7"]
+[ext_resource type="Texture2D" uid="uid://ewl2fcl4ukqt" path="res://Art/Backgrounds/S23-Entrance.png" id="3_v7nvb"]
+[ext_resource type="Texture2D" uid="uid://dhwpte6k8f70j" path="res://Art/Portraits/Default/default.png" id="4_87bdf"]
+[ext_resource type="Texture2D" uid="uid://cq7n2hsn2f8kd" path="res://Art/ContinueIcon.png" id="4_pexf4"]
+[ext_resource type="Texture2D" uid="uid://b5et4yty8mule" path="res://Art/Portraits/Adler.png" id="5_kkhfn"]
+[ext_resource type="Resource" uid="uid://ccqklocu1pt46" path="res://Scripts/DialogueAudio.tres" id="6_m46t6"]
+[ext_resource type="AudioStream" uid="uid://dvistirh46bwr" path="res://Sounds/animal_crossing_sounds/vowel_sound_a.wav" id="7_5dvu7"]
+[ext_resource type="Texture2D" uid="uid://yx1ob88us6vf" path="res://Art/2114880_gray-semi-transparent-grey-box-hd-png-download.png" id="8_mds67"]
+
+[node name="GEncrer Handler" type="Node2D" node_paths=PackedStringArray("fileloader", "dialoguePanel", "continueIcon", "dialogueText", "displayNameText", "choices", "choicesText", "background", "portrait", "audioSource")]
+position = Vector2(576, 316)
+script = ExtResource("1_3smmm")
+globalspath = "res://RuntimeFiles/load_globals.txt"
+inkpath = "res://RuntimeFiles/ExampleFile.txt"
+fileloader = NodePath("DialogueBox")
+dialoguePanel = NodePath("DialogueBox")
+continueIcon = NodePath("ContinueIcon")
+dialogueText = NodePath("DialogueText")
+displayNameText = NodePath("DialogueText/DialogueName")
+choices = [NodePath("Choices/Choice 1"), NodePath("Choices/Choice 2"), NodePath("Choices/Choice 3"), NodePath("Choices/Choice 4"), NodePath("Choices/Choice 5"), NodePath("Choices/Choice 6")]
+choicesText = [NodePath("Choices/Choice 1/Label"), NodePath("Choices/Choice 2/Label"), NodePath("Choices/Choice 3/Label"), NodePath("Choices/Choice 4/Label"), NodePath("Choices/Choice 5/Label"), NodePath("Choices/Choice 6/Label")]
+background = NodePath("Background")
+backgroundTextures = Array[Texture]([ExtResource("3_v7nvb"), ExtResource("3_n8nq7")])
+portrait = NodePath("Portrait")
+portraitTextures = Array[Texture]([ExtResource("4_87bdf"), ExtResource("5_kkhfn")])
+defaultAudioInfo = ExtResource("6_m46t6")
+audioInfos = [ExtResource("6_m46t6")]
+currentAudioInfo = ExtResource("6_m46t6")
+audioSource = NodePath("Camera2D/Dialogue Sound")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Dialogue Sound" type="AudioStreamPlayer" parent="Camera2D"]
+stream = ExtResource("7_5dvu7")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(-2.75, 0)
+scale = Vector2(0.744812, 0.745958)
+texture = ExtResource("3_v7nvb")
+
+[node name="Portrait" type="Sprite2D" parent="."]
+position = Vector2(-256, 14)
+texture = ExtResource("5_kkhfn")
+
+[node name="Choices" type="Node2D" parent="."]
+
+[node name="Choice 1" type="Node2D" parent="Choices"]
+
+[node name="Label" type="Label" parent="Choices/Choice 1"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Choice 2" type="Node2D" parent="Choices"]
+
+[node name="Label" type="Label" parent="Choices/Choice 2"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Choice 3" type="Node2D" parent="Choices"]
+
+[node name="Label" type="Label" parent="Choices/Choice 3"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Choice 4" type="Node2D" parent="Choices"]
+
+[node name="Label" type="Label" parent="Choices/Choice 4"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Choice 5" type="Node2D" parent="Choices"]
+
+[node name="Label" type="Label" parent="Choices/Choice 5"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Choice 6" type="Node2D" parent="Choices"]
+
+[node name="Label" type="Label" parent="Choices/Choice 6"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="DialogueBox" type="Node2D" parent="."]
+position = Vector2(82, -73)
+scale = Vector2(22.4632, -35.5439)
+
+[node name="TextureRect" type="TextureRect" parent="DialogueBox"]
+offset_left = -27.3781
+offset_top = -10.5784
+offset_right = 924.622
+offset_bottom = 449.422
+scale = Vector2(0.0501248, 0.0134889)
+texture = ExtResource("8_mds67")
+stretch_mode = 2
+
+[node name="DialogueText" type="RichTextLabel" parent="."]
+offset_left = -525.0
+offset_top = 96.0
+offset_right = 539.0
+offset_bottom = 308.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 20
+bbcode_enabled = true
+text = "
+The Text for the VN Goes Here"
+fit_content = true
+language = "English"
+
+[node name="DialogueName" type="RichTextLabel" parent="DialogueText"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -3.0
+offset_right = 205.0
+offset_bottom = 26.0
+theme_override_font_sizes/normal_font_size = 20
+text = "Name Goes Here"
+
+[node name="ContinueIcon" type="Sprite2D" parent="."]
+position = Vector2(6, 302)
+scale = Vector2(2.875, 2.25)
+texture = ExtResource("4_pexf4")

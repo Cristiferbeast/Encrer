@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=8 format=3 uid="uid://ccqklocu1pt46"]
+
+[ext_resource type="Script" path="res://Scripts/DialogueAudio.cs" id="1_bagtj"]
+[ext_resource type="AudioStream" uid="uid://dvistirh46bwr" path="res://Sounds/animal_crossing_sounds/vowel_sound_a.wav" id="1_m678k"]
+[ext_resource type="AudioStream" uid="uid://uol75ns3oqiq" path="res://Sounds/animal_crossing_sounds/vowel_sound_e.wav" id="2_qulrc"]
+[ext_resource type="AudioStream" uid="uid://dpg3fuxsic0dp" path="res://Sounds/animal_crossing_sounds/vowel_sound_i.wav" id="3_gwpl8"]
+[ext_resource type="AudioStream" uid="uid://dd5tb47wel5kn" path="res://Sounds/animal_crossing_sounds/vowel_sound_o.wav" id="4_jfavv"]
+[ext_resource type="AudioStream" uid="uid://lvc1og6ut1hh" path="res://Sounds/animal_crossing_sounds/vowel_sound_u.wav" id="5_5taii"]
+[ext_resource type="AudioStream" uid="uid://bwqet2iueasf5" path="res://Sounds/animal_crossing_sounds/vowel_sound_y.wav" id="6_ouwqh"]
+
+[resource]
+script = ExtResource("1_bagtj")
+dialogueTypingSoundClips = Array[AudioStream]([ExtResource("1_m678k"), ExtResource("2_qulrc"), ExtResource("3_gwpl8"), ExtResource("4_jfavv"), ExtResource("5_5taii"), ExtResource("6_ouwqh")])
+frequencyLevel = 2
+minPitch = 0.5
+maxPitch = 3.0
