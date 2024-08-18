@@ -59,7 +59,8 @@ public class DialogueManager : MonoBehaviour
 
     //Tags
     private const string SPEAKER_TAG = "speaker";
-    private const string PORTRAIT_TAG = "portrait";
+    private const string PORTRAITLEFT_TAG = "portrait";
+    private const string PORTRAITRIGHT_TAG = "pright";
     private const string AUDIO_TAG = "audio";
     private const string FONT_TAG = "font";
 
@@ -335,9 +336,9 @@ public class DialogueManager : MonoBehaviour
                 case SPEAKER_TAG:
                     displayNameText.text = tagValue;
                     break;
-                case PORTRAIT_TAG:
+                case PORTRAITLEFT_TAG:
                     InkExternalFunctions.showportrait(true);
-                    Image portraitImage = portrait.GetComponent<Image>();
+                    Image portraitImage = portraitleft.GetComponent<Image>();
                     Sprite[] sprites = portraitSprites; 
                     bool spriteFound = false;
                     foreach (Sprite sprite in sprites) {
@@ -349,6 +350,26 @@ public class DialogueManager : MonoBehaviour
                         }
                     }
                     if (!spriteFound) {
+                        Debug.LogError("Did not Find Sprite with name: " + tagValue);
+                    }
+                    break;
+                case PORTRAITRIGHT_TAG:
+                    InkExternalFunctions.showportrait(true);
+                    portraitImage = portraitright.GetComponent<Image>();
+                    sprites = portraitSprites;
+                    spriteFound = false;
+                    foreach(Sprite sprite in sprites)
+                    {
+                        Debug.Log("Loded Sprite: " + sprite.name);
+                        if(sprite.name == tagValue)
+                        {
+                            portraitImage.sprite = sprite;
+                            spriteFound = true;
+                            break;  
+                        }
+                    }
+                    if (!spriteFound)
+                    {
                         Debug.LogError("Did not Find Sprite with name: " + tagValue);
                     }
                     break;
@@ -426,6 +447,13 @@ public class DialogueManager : MonoBehaviour
         return variableValue;
     }
 
+    public void SettingsButton(bool state)
+    {
+        this.generalCanvas.SetActive(!state);
+        this.imageObjects.SetActive(!state);
+        this.menuCanvas.SetActive(state);
+        Debug.Log("Settings Button Clicked");
+    }
     // This method will get called anytime the application exits.
     // Depending on your game, you may want to save variable state in other places.
     public void OnApplicationQuit() 
