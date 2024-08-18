@@ -52,7 +52,13 @@ public class InkExternalFunctions
     }
     public static void showportrait(bool state){
         DialogueManager d = DialogueManager.GetInstance();
-        GameObject portrait = d.portrait;
+        GameObject portrait = d.portraitleft;
+        portrait.SetActive(state);
+    }
+    public static void showrightportrait(bool state)
+    {
+        DialogueManager d = DialogueManager.GetInstance();
+        GameObject portrait = d.portraitright;
         portrait.SetActive(state);
     }
 }

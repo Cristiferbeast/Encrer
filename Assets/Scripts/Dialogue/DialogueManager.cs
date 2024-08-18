@@ -1,10 +1,11 @@
+using Ink.Runtime;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
-using Ink.Runtime;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -30,6 +31,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private DialogueAudioInfoSO defaultAudioInfo;
     [SerializeField] private DialogueAudioInfoSO[] audioInfos;
     [SerializeField] private bool makePredictable;
+    [SerializeField] private bool Muted = true;
     private DialogueAudioInfoSO currentAudioInfo;
     private Dictionary<string, DialogueAudioInfoSO> audioInfoDictionary;
     private AudioSource audioSource;
@@ -45,8 +47,14 @@ public class DialogueManager : MonoBehaviour
     public Sprite[] backgroundSprite;
 
     [Header("Portrait Control")]
-    public GameObject portrait;
+    public GameObject portraitleft;
+    public GameObject portraitright;
     public Sprite[] portraitSprites;
+
+    [Header("General Control")]
+    public GameObject generalCanvas;
+    public GameObject menuCanvas;
+    public GameObject imageObjects;
 
     private Story currentStory;
     public bool dialogueIsPlaying { get; private set; }
@@ -59,7 +67,8 @@ public class DialogueManager : MonoBehaviour
 
     //Tags
     private const string SPEAKER_TAG = "speaker";
-    private const string PORTRAIT_TAG = "portrait";
+    private const string PORTRAITLEFT_TAG = "portrait";
+    private const string PORTRAITRIGHT_TAG = "pright";
     private const string AUDIO_TAG = "audio";
     private const string FONT_TAG = "font";
 
@@ -142,7 +151,7 @@ public class DialogueManager : MonoBehaviour
         // NOTE: The 'currentStory.currentChoiecs.Count == 0' part was to fix a bug after the Youtube video was made
         if (canContinueToNextLine 
             && currentStory.currentChoices.Count == 0 
-            && InputManager.GetInstance().GetSubmitPressed())
+            && CheckInput())
         {
             ContinueStory();
         }
@@ -207,7 +216,7 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private IEnumerator DisplayLine(string line) 
+    private IEnumerator DisplayLine(string line)
     {
         // set the text to the full line, but set the visible characters to 0
         dialogueText.text = line;
@@ -224,7 +233,7 @@ public class DialogueManager : MonoBehaviour
         foreach (char letter in line.ToCharArray())
         {
             // if the submit button is pressed, finish up displaying the line right away
-            if (InputManager.GetInstance().GetSubmitPressed()) 
+            if (CheckInput()) 
             {
                 dialogueText.maxVisibleCharacters = line.Length;
                 break;
@@ -242,7 +251,7 @@ public class DialogueManager : MonoBehaviour
             // if not rich text, add the next letter and wait a small time
             else 
             {
-                PlayDialogueSound(dialogueText.maxVisibleCharacters, dialogueText.text[dialogueText.maxVisibleCharacters]);
+                PlayDialogueSound(dialogueText.maxVisibleCharacters, dialogueText.text[dialogueText.maxVisibleCharacters], Muted);
                 dialogueText.maxVisibleCharacters++;
                 yield return new WaitForSeconds(typingSpeed);
             }
@@ -255,8 +264,12 @@ public class DialogueManager : MonoBehaviour
         canContinueToNextLine = true;
     }
 
-    private void PlayDialogueSound(int currentDisplayedCharacterCount, char currentCharacter)
+    private void PlayDialogueSound(int currentDisplayedCharacterCount, char currentCharacter, bool muted)
     {
+        if (muted)
+        {
+            return;
+        }
         // set variables for the below based on our config
         AudioClip[] dialogueTypingSoundClips = currentAudioInfo.dialogueTypingSoundClips;
         int frequencyLevel = currentAudioInfo.frequencyLevel;
@@ -335,9 +348,9 @@ public class DialogueManager : MonoBehaviour
                 case SPEAKER_TAG:
                     displayNameText.text = tagValue;
                     break;
-                case PORTRAIT_TAG:
+                case PORTRAITLEFT_TAG:
                     InkExternalFunctions.showportrait(true);
-                    Image portraitImage = portrait.GetComponent<Image>();
+                    Image portraitImage = portraitleft.GetComponent<Image>();
                     Sprite[] sprites = portraitSprites; 
                     bool spriteFound = false;
                     foreach (Sprite sprite in sprites) {
@@ -349,6 +362,26 @@ public class DialogueManager : MonoBehaviour
                         }
                     }
                     if (!spriteFound) {
+                        Debug.LogError("Did not Find Sprite with name: " + tagValue);
+                    }
+                    break;
+                case PORTRAITRIGHT_TAG:
+                    InkExternalFunctions.showportrait(true);
+                    portraitImage = portraitright.GetComponent<Image>();
+                    sprites = portraitSprites;
+                    spriteFound = false;
+                    foreach(Sprite sprite in sprites)
+                    {
+                        Debug.Log("Loded Sprite: " + sprite.name);
+                        if(sprite.name == tagValue)
+                        {
+                            portraitImage.sprite = sprite;
+                            spriteFound = true;
+                            break;  
+                        }
+                    }
+                    if (!spriteFound)
+                    {
                         Debug.LogError("Did not Find Sprite with name: " + tagValue);
                     }
                     break;
@@ -410,7 +443,6 @@ public class DialogueManager : MonoBehaviour
         if (canContinueToNextLine) 
         {
             currentStory.ChooseChoiceIndex(choiceIndex);
-            InputManager.GetInstance().RegisterSubmitPressed(); 
             ContinueStory();
         }
     }
@@ -424,6 +456,53 @@ public class DialogueManager : MonoBehaviour
             Debug.LogWarning("Ink Variable was found to be null: " + variableName);
         }
         return variableValue;
+    }
+
+    public void SettingsButton(bool state)
+    {
+        this.generalCanvas.SetActive(!state);
+        this.imageObjects.SetActive(!state);
+        this.menuCanvas.SetActive(state);
+        Debug.Log("Settings Button Clicked");
+    }
+    public bool CheckInput()
+    {
+        bool spaceKeyPressed = false;
+        bool leftMouseButtonPressed = false;
+        bool touchStarted = false;
+
+        // Check if the new Input System is available
+        if (Keyboard.current != null)
+        {
+            spaceKeyPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
+        }
+        else
+        {
+            // Legacy Input System
+            spaceKeyPressed = Input.GetKeyDown(KeyCode.Space);
+        }
+
+        if (Mouse.current != null)
+        {
+            leftMouseButtonPressed = Mouse.current.leftButton.wasPressedThisFrame;
+        }
+        else
+        {
+            // Legacy Input System
+            leftMouseButtonPressed = Input.GetMouseButtonDown(0);
+        }
+
+        if (Touchscreen.current != null)
+        {
+            touchStarted = Touchscreen.current.primaryTouch.press.wasPressedThisFrame;
+        }
+        else
+        {
+            // Legacy Input System
+            touchStarted = Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
+        }
+
+        return spaceKeyPressed || leftMouseButtonPressed || touchStarted;
     }
 
     // This method will get called anytime the application exits.
