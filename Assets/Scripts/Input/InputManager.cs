@@ -26,6 +26,31 @@ public class InputManager : MonoBehaviour
         }
         instance = this;
     }
+     private void OnNavigatePerformed(InputAction.CallbackContext context)
+    {
+        moveDirection = context.ReadValue<Vector2>();
+    }
+
+    private void OnNavigateCanceled(InputAction.CallbackContext context)
+    {
+        moveDirection = Vector2.zero;
+    }
+
+    private void OnSubmitPerformed(InputAction.CallbackContext context)
+    {
+        submitPressed = true;
+    }
+
+    private void OnSubmitCanceled(InputAction.CallbackContext context)
+    {
+        submitPressed = false;
+    }
+
+
+    public Vector2 GetMoveDirection() 
+    {
+        return moveDirection;
+    }
 
     public static InputManager GetInstance() 
     {
@@ -78,11 +103,6 @@ public class InputManager : MonoBehaviour
         {
             submitPressed = false;
         } 
-    }
-
-    public Vector2 GetMoveDirection() 
-    {
-        return moveDirection;
     }
 
     // for any of the below 'Get' methods, if we're getting it then we're also using it,
