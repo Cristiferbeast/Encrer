@@ -44,12 +44,13 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TextAsset inkJSON;
 
     [Header("Backgrounds")]
-    public GameObject background; 
+    public GameObject background;
     public Sprite[] backgroundSprite;
 
     [Header("Portrait Control")]
     public GameObject portraitleft;
     public GameObject portraitright;
+    public GameObject portraitleftcenter;
     public Sprite[] portraitSprites;
 
     [Header("General Control")]
@@ -77,7 +78,7 @@ public class DialogueManager : MonoBehaviour
     private DialogueVariables dialogueVariables;
     private InkExternalFunctions inkExternalFunctions;
 
-    private void Awake() 
+    private void Awake()
     {
         if (instance != null)
         {
@@ -92,11 +93,11 @@ public class DialogueManager : MonoBehaviour
         currentAudioInfo = defaultAudioInfo;
 
     }
-    public static DialogueManager GetInstance() 
+    public static DialogueManager GetInstance()
     {
         return instance;
     }
-    private void Start() 
+    private void Start()
     {
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
@@ -104,40 +105,40 @@ public class DialogueManager : MonoBehaviour
         // get all of the choices text 
         choicesText = new TextMeshProUGUI[choices.Length];
         int index = 0;
-        foreach (GameObject choice in choices) 
+        foreach (GameObject choice in choices)
         {
             choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
             index++;
         }
 
-        if(!muted) InitializeAudioInfoDictionary(); //If Muted we dont need to load the Audios at Start, we Can Do This Whenever Its Unmunted
+        if (!muted) InitializeAudioInfoDictionary(); //If Muted we dont need to load the Audios at Start, we Can Do This Whenever Its Unmunted
         DialogueManager.GetInstance().EnterDialogueMode(inkJSON, emoteAnimator);
     }
-    private void InitializeAudioInfoDictionary() 
+    private void InitializeAudioInfoDictionary()
     {
         audioInfoDictionary = new Dictionary<string, DialogueAudioInfoSO>();
         audioInfoDictionary.Add(defaultAudioInfo.id, defaultAudioInfo);
-        foreach (DialogueAudioInfoSO audioInfo in audioInfos) 
+        foreach (DialogueAudioInfoSO audioInfo in audioInfos)
         {
             audioInfoDictionary.Add(audioInfo.id, audioInfo);
         }
     }
-    private void SetCurrentAudioInfo(string id) 
+    private void SetCurrentAudioInfo(string id)
     {
         DialogueAudioInfoSO audioInfo = null;
         audioInfoDictionary.TryGetValue(id, out audioInfo);
-        if (audioInfo != null) 
+        if (audioInfo != null)
         {
             this.currentAudioInfo = audioInfo;
         }
-        else 
+        else
         {
             Debug.LogWarning("Failed to find audio info for id: " + id);
         }
     }
-    private void Update() 
+    private void Update()
     {
-        if (!dialogueIsPlaying) 
+        if (!dialogueIsPlaying)
         {
             //If Dialogue Isn't Playing then Return
             return;
@@ -149,7 +150,7 @@ public class DialogueManager : MonoBehaviour
             ContinueStory();
         }
     }
-    public void EnterDialogueMode(TextAsset inkJSON, Animator emoteAnimator) 
+    public void EnterDialogueMode(TextAsset inkJSON, Animator emoteAnimator)
     {
         currentStory = new Story(inkJSON.text);
         dialogueIsPlaying = true;
@@ -163,7 +164,7 @@ public class DialogueManager : MonoBehaviour
         displayNameText.text = "???";
         ContinueStory();
     }
-    private IEnumerator ExitDialogueMode() 
+    private IEnumerator ExitDialogueMode()
     {
         yield return new WaitForSeconds(0.2f);
 
@@ -174,9 +175,9 @@ public class DialogueManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         dialogueText.text = "";
 
-        if(!muted) SetCurrentAudioInfo(defaultAudioInfo.id); // Go back to default audio if Unmunted
+        if (!muted) SetCurrentAudioInfo(defaultAudioInfo.id); // Go back to default audio if Unmunted
     }
-    private void ContinueStory() 
+    private void ContinueStory()
     {
         try
         {
@@ -248,36 +249,36 @@ public class DialogueManager : MonoBehaviour
         // play the sound based on the config
         if (currentDisplayedCharacterCount % frequencyLevel == 0)
         {
-            if (stopAudioSource) 
+            if (stopAudioSource)
             {
                 audioSource.Stop();
             }
             AudioClip soundClip = null;
             // create predictable audio from hashing
-            if (makePredictable) 
+            if (makePredictable)
             {
                 int hashCode = currentCharacter.GetHashCode();
                 // sound clip
                 int predictableIndex = hashCode % dialogueTypingSoundClips.Length;
                 soundClip = dialogueTypingSoundClips[predictableIndex];
                 // pitch
-                int minPitchInt = (int) (minPitch * 100);
-                int maxPitchInt = (int) (maxPitch * 100);
+                int minPitchInt = (int)(minPitch * 100);
+                int maxPitchInt = (int)(maxPitch * 100);
                 int pitchRangeInt = maxPitchInt - minPitchInt;
                 // cannot divide by 0, so if there is no range then skip the selection
-                if (pitchRangeInt != 0) 
+                if (pitchRangeInt != 0)
                 {
                     int predictablePitchInt = (hashCode % pitchRangeInt) + minPitchInt;
                     float predictablePitch = predictablePitchInt / 100f;
                     audioSource.pitch = predictablePitch;
                 }
-                else 
+                else
                 {
                     audioSource.pitch = minPitch;
                 }
             }
             // otherwise, randomize the audio
-            else 
+            else
             {
                 // sound clip
                 int randomIndex = UnityEngine.Random.Range(0, dialogueTypingSoundClips.Length);
@@ -285,14 +286,14 @@ public class DialogueManager : MonoBehaviour
                 // pitch
                 audioSource.pitch = UnityEngine.Random.Range(minPitch, maxPitch);
             }
-            
+
             // play sound
             audioSource.PlayOneShot(soundClip);
         }
     }
-    private void HideChoices() 
+    private void HideChoices()
     {
-        foreach (GameObject choiceButton in choices) 
+        foreach (GameObject choiceButton in choices)
         {
             choiceButton.SetActive(false);
         }
@@ -306,7 +307,7 @@ public class DialogueManager : MonoBehaviour
             if (splitTag.Length != 2) { Debug.LogError("Tag could not be appropriately parsed: " + tag); }
             string tagKey = splitTag[0].Trim();
             string tagValue = splitTag[1].Trim();
-            
+
             switch (tagKey) // handle the tag
             {
                 case SPEAKER_TAG:
@@ -314,34 +315,17 @@ public class DialogueManager : MonoBehaviour
                     break;
                 case PORTRAITLEFT_TAG:
                     InkExternalFunctions.showportrait(true);
-                    Image portraitImage = portraitleft.GetComponent<Image>();
-                    Sprite[] sprites = portraitSprites; 
+                    SpriteRenderer portraitImage = portraitleft.GetComponent<SpriteRenderer>();
+                    Sprite[] sprites = portraitSprites;
                     bool spriteFound = false;
-                    foreach (Sprite sprite in sprites) {
-                        Debug.Log("Loaded Sprite: " + sprite.name);
-                        if (sprite.name == tagValue) {
-                            portraitImage.sprite = sprite;  
-                            spriteFound = true;
-                            break;
-                        }
-                    }
-                    if (!spriteFound) {
-                        Debug.LogError("Did not Find Sprite with name: " + tagValue);
-                    }
-                    break;
-                case PORTRAITRIGHT_TAG:
-                    InkExternalFunctions.showportrait(true);
-                    portraitImage = portraitright.GetComponent<Image>();
-                    sprites = portraitSprites;
-                    spriteFound = false;
-                    foreach(Sprite sprite in sprites)
+                    foreach (Sprite sprite in sprites)
                     {
-                        Debug.Log("Loded Sprite: " + sprite.name);
-                        if(sprite.name == tagValue)
+                        Debug.Log("Loaded Sprite: " + sprite.name);
+                        if (sprite.name == tagValue)
                         {
                             portraitImage.sprite = sprite;
                             spriteFound = true;
-                            break;  
+                            break;
                         }
                     }
                     if (!spriteFound)
@@ -349,14 +333,35 @@ public class DialogueManager : MonoBehaviour
                         Debug.LogError("Did not Find Sprite with name: " + tagValue);
                     }
                     break;
-                case AUDIO_TAG: 
+                case PORTRAITRIGHT_TAG:
+                    InkExternalFunctions.showportrait(true);
+                    portraitImage = portraitright.GetComponent<SpriteRenderer>();
+                    sprites = portraitSprites;
+                    spriteFound = false;
+                    foreach (Sprite sprite in sprites)
+                    {
+                        Debug.Log("Loded Sprite: " + sprite.name);
+                        if (sprite.name == tagValue)
+                        {
+                            portraitImage.sprite = sprite;
+                            spriteFound = true;
+                            break;
+                        }
+                    }
+                    if (!spriteFound)
+                    {
+                        Debug.LogError("Did not Find Sprite with name: " + tagValue);
+                    }
+                    break;
+                case AUDIO_TAG:
                     SetCurrentAudioInfo(tagValue);
                     break;
                 case FONT_TAG:
-                    if (float.TryParse(tagValue, out float result)){
+                    if (float.TryParse(tagValue, out float result))
+                    {
                         displayNameText.fontSize = result;
                     }
-                    else{ Debug.LogWarning("Font Tag did not have a Float Extension");}
+                    else { Debug.LogWarning("Font Tag did not have a Float Extension"); }
                     break;
                 default:
                     Debug.LogWarning("Tag came in but is not currently being handled: " + tag);
@@ -364,16 +369,16 @@ public class DialogueManager : MonoBehaviour
             }
         }
     }
-    private void DisplayChoices() 
+    private void DisplayChoices()
     {
         List<Choice> currentChoices = currentStory.currentChoices;
         if (currentChoices.Count > choices.Length) //To Ensure that Encrer doesnt get overloaded
         {
-            Debug.LogError("More choices were given than the UI can support. Number of choices given: " 
+            Debug.LogError("More choices were given than the UI can support. Number of choices given: "
                 + currentChoices.Count);
         }
         int index = 0;
-        foreach(Choice choice in currentChoices) //Set Up the Choices 
+        foreach (Choice choice in currentChoices) //Set Up the Choices 
         {
             choices[index].gameObject.SetActive(true);
             choicesText[index].text = choice.text;
@@ -385,7 +390,7 @@ public class DialogueManager : MonoBehaviour
         }
         StartCoroutine(SelectFirstChoice());
     }
-    private IEnumerator SelectFirstChoice() 
+    private IEnumerator SelectFirstChoice()
     {
         //To be frank i have no fucking clue how this works Y^Y, still working on that, but its a relic of System 7
         // Event System requires we clear it first, then wait
@@ -396,17 +401,17 @@ public class DialogueManager : MonoBehaviour
     }
     public void MakeChoice(int choiceIndex)
     {
-        if (canContinueToNextLine) 
+        if (canContinueToNextLine)
         {
             currentStory.ChooseChoiceIndex(choiceIndex);
             ContinueStory();
         }
     }
-    public Ink.Runtime.Object GetVariableState(string variableName) 
+    public Ink.Runtime.Object GetVariableState(string variableName)
     {
         Ink.Runtime.Object variableValue = null;
         dialogueVariables.variables.TryGetValue(variableName, out variableValue);
-        if (variableValue == null) 
+        if (variableValue == null)
         {
             Debug.LogWarning("Ink Variable was found to be null: " + variableName);
         }
@@ -429,7 +434,7 @@ public class DialogueManager : MonoBehaviour
         if (Touchscreen.current != null) touchStarted = Touchscreen.current.primaryTouch.press.wasPressedThisFrame;
         return spaceKeyPressed || leftMouseButtonPressed || touchStarted;
     }
-    public void OnApplicationQuit() 
+    public void OnApplicationQuit()
     {
         // This method will get called anytime the application exits.
         // Depending on your game, you may want to save variable state in other places.
