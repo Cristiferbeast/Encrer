@@ -78,6 +78,8 @@ public class DialogueManager : MonoBehaviour
     private DialogueVariables dialogueVariables;
     private InkExternalFunctions inkExternalFunctions;
 
+    private bool inputChecked = false;
+
     private void Awake()
     {
         if (instance != null)
@@ -138,6 +140,9 @@ public class DialogueManager : MonoBehaviour
     }
     private void Update()
     {
+        //Used for the CheckInput2 method
+        inputChecked = inputChecked || CheckInput();
+
         if (!dialogueIsPlaying)
         {
             //If Dialogue Isn't Playing then Return
@@ -145,7 +150,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         // NOTE: The 'currentStory.currentChoiecs.Count == 0' part was to fix a bug in System 7 (Encrer does intend on finding a more permanent fix)
-        if (canContinueToNextLine && currentStory.currentChoices.Count == 0 && CheckInput())
+        if (canContinueToNextLine && currentStory.currentChoices.Count == 0 && CheckInput2())
         {
             ContinueStory();
         }
@@ -162,6 +167,13 @@ public class DialogueManager : MonoBehaviour
         // When Entering Dialogue Mode we Have to Reset All Active Toggles
         InkExternalFunctions.showportrait(false);
         displayNameText.text = "???";
+
+        // Load story save
+        GameData data = SaveSystem.LoadGame();
+        if (data != null)
+        {
+            currentStory.ChoosePathString(data.knot);
+        }
         ContinueStory();
     }
     private IEnumerator ExitDialogueMode()
@@ -208,7 +220,7 @@ public class DialogueManager : MonoBehaviour
 
         foreach (char letter in line.ToCharArray()) // display each letter one at a time
         {
-            if (CheckInput()) // if the submit button is pressed, finish up displaying the line right away
+            if (CheckInput2()) // if the submit button is pressed, finish up displaying the line right away
             {
                 dialogueText.maxVisibleCharacters = line.Length;
                 break;
@@ -429,10 +441,21 @@ public class DialogueManager : MonoBehaviour
         bool spaceKeyPressed = false;
         bool leftMouseButtonPressed = false;
         bool touchStarted = false;
+
         if (Keyboard.current != null) spaceKeyPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
         if (Mouse.current != null) leftMouseButtonPressed = Mouse.current.leftButton.wasPressedThisFrame;
         if (Touchscreen.current != null) touchStarted = Touchscreen.current.primaryTouch.press.wasPressedThisFrame;
+
         return spaceKeyPressed || leftMouseButtonPressed || touchStarted;
+    }
+    public bool CheckInput2() //This method is for checking input even through waiting
+    {
+        if (inputChecked)
+        {
+            inputChecked = false;
+            return true;
+        }
+        return false;
     }
     public void OnApplicationQuit()
     {
