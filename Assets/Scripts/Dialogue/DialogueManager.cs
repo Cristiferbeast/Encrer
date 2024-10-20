@@ -400,16 +400,17 @@ public class DialogueManager : MonoBehaviour
         {
             choices[i].gameObject.SetActive(false);
         }
-        StartCoroutine(SelectFirstChoice());
+        //StartCoroutine(SelectFirstChoice());
     }
     private IEnumerator SelectFirstChoice()
     {
-        //To be frank i have no fucking clue how this works Y^Y, still working on that, but its a relic of System 7
-        // Event System requires we clear it first, then wait
-        // for at least one frame before we set the current selected object.
+        //To be frank i have no fucking clue how this works Y^Y, still working on that, but its a relic of System 7, it makes it so that when choices are decided it selects first choice first allowing you to use arrow keys
         EventSystem.current.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame();
         EventSystem.current.SetSelectedGameObject(choices[0].gameObject);
+    }
+    public void SelectChoice(int i){
+        EventSystem.current.SetSelectedGameObject(choices[i].gameObject);
     }
     public void MakeChoice(int choiceIndex)
     {
@@ -441,12 +442,14 @@ public class DialogueManager : MonoBehaviour
         bool spaceKeyPressed = false;
         bool leftMouseButtonPressed = false;
         bool touchStarted = false;
+        bool enterKeyPressed = false; // Added for testing purposes
 
         if (Keyboard.current != null) spaceKeyPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
         if (Mouse.current != null) leftMouseButtonPressed = Mouse.current.leftButton.wasPressedThisFrame;
         if (Touchscreen.current != null) touchStarted = Touchscreen.current.primaryTouch.press.wasPressedThisFrame;
+        if (Keyboard.current != null) enterKeyPressed = Keyboard.current.enterKey.isPressed; // Added for testing purposes
 
-        return spaceKeyPressed || leftMouseButtonPressed || touchStarted;
+        return spaceKeyPressed || leftMouseButtonPressed || touchStarted || enterKeyPressed; // Enter key condition added for testing purposes
     }
     public bool CheckInput2() //This method is for checking input even through waiting
     {
